@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký</title>
+  <link rel="stylesheet" href="../css/register.css">
+  <link rel="stylesheet" href="../css/reset.css">
+</head>
+<body>
+  <div class="container-regis">
+    <form class="form-regis-box">
+      <h2>Đăng ký</h2>
+      <input type="text" id="regis-name" placeholder="Họ và tên" required>
+      <div class="error-text" id="name-regis-error"></div>
+      <input type="email" id="regis-email" placeholder="Địa chỉ email" required>
+      <div class="error-text" id="email-regis-error"></div>
+      <input type="password" id="regis-password" placeholder="Mật khẩu" required>
+      <div class="error-text" id="password-regis-error"></div>
+      <input type="password" id="confirm-password-regis-error" placeholder="Xác nhận mật khẩu" required>
+      <div class="error-text" id="error-confirm-password"></div>
+      <button type="button" onclick="handleRegister()">Đăng ký</button>
+      <p>Đã có tài khoản? <a href="../pages/login.html">Đăng nhập</a></p>
+    </form>
+  </div>
+  <script src="../js/register.js"></script>
+</body>
+</html>

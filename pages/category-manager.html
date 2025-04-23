@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản lý dự án</title>
+  <link rel="stylesheet" href="../css/category-manager.css" />
+  <link rel="stylesheet" href="../css/reset.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <h1>Quản lý dự án</h1>
+      <div class="menu">
+        <a href="../pages/product-manager.html">Dự án</a>
+        <a href="#">Nhiệm vụ của tôi</a>
+        <a class="logout" href="../pages/login.html">Đăng xuất</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <h2>Xây dựng website thương mại điện tử</h2>
+    <p>Dự án nhằm phát triển một nền tảng thương mại điện tử với các tính năng như giỏ hàng,<br> thanh toán và quản lý sản phẩm.</p>
+
+    <button class="btn add">+ Thêm nhiệm vụ</button>
+
+    <div class="task-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Tên Nhiệm Vụ</th>
+            <th>Người Phụ Trách</th>
+            <th>Ưu Tiên</th>
+            <th>Ngày Bắt Đầu</th>
+            <th>Hạn Chót</th>
+            <th>Tiến độ</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Soạn thảo đề cương dự án</td>
+            <td>An Nguyễn</td>
+            <td><span class="badge low">Thấp</span></td>
+            <td class="date">02 - 24</td>
+            <td class="date">02 - 27</td>
+            <td><span class="badge success">Đúng tiến độ</span></td>
+            <td>
+              <button class="btn edit">Sửa</button>
+              <button class="btn delete">Xóa</button>
+            </td>
+          </tr>
+          <!-- Thêm các hàng khác tương tự -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 Quản Lý Dự Án Nhóm. All rights reserved.
+  </footer>
+</body>
+</html>

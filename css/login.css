@@ -1,0 +1,81 @@
+/* CSS TRANG ĐĂNG NHẬP */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+.container-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .form-login-box {
+    background-color: white;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+  }
+  
+  .form-login-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 28px;
+  }
+  
+  .form-login-box label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  
+  .form-login-box input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  .form-login-box button {
+    width: 100%;
+    padding: 14px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .form-login-box button:hover {
+    background-color: #1d4ed8;
+  }
+  
+  .form-login-box p {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  
+  .form-login-box a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .error-text {
+    color: red;
+    margin: -5px 0px 10px 0;
+  }
