@@ -1,47 +1,39 @@
 function handleLoginSubmit() {
-    const email = document.querySelector("#login-email");
-    const password = document.querySelector("#login-password");
+    const emailInput = document.querySelector("#login-email");
+    const passwordInput = document.querySelector("#login-password");
 
-    const errorEmail = document.getElementById("email-login-error");
-    const errorPassword = document.getElementById("password-login-error");
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
 
-    // Reset lỗi
-    [email, password].forEach(input => input.classList.remove("is-invalid"));
-    [errorEmail, errorPassword].forEach(error => error.innerText = "");
+    const errorEmail = document.querySelector("#email-login-error");
+    const errorPassword = document.querySelector("#password-login-error");
 
-    let isValidInput = true;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    [errorEmail, errorPassword].forEach(e => e.innerText = "");
+    [emailInput, passwordInput].forEach(i => i.classList.remove("is-invalid"));
 
-    if (!email.value.trim()) {
-        email.classList.add("is-invalid");
-        errorEmail.innerText = "Email không được để trống";
-        isValidInput = false;
-    } else if (!emailRegex.test(email.value.trim())) {
-        email.classList.add("is-invalid");
-        errorEmail.innerText = "Email không hợp lệ";
-        isValidInput = false;
+    let isValid = true;
+    if (!email) {
+      errorEmail.innerText = "Vui lòng nhập email";
+      emailInput.classList.add("is-invalid");
+      isValid = false;
     }
 
-    if (!password.value.trim()) {
-        password.classList.add("is-invalid");
-        errorPassword.innerText = "Mật khẩu không được để trống";
-        isValidInput = false;
+    if (!password) {
+      errorPassword.innerText = "Vui lòng nhập mật khẩu";
+      passwordInput.classList.add("is-invalid");
+      isValid = false;
     }
 
-    if (isValidInput) {
+    if (!isValid) return;
 
-        const validUser = users.find(user =>
-            user.email === email.value.trim() && user.password === password.value.trim()
-        );
-        
-        if (validUser) {
-            if (validUser.role === "ADMIN") {
-                location.href = "/pages/product-manager.html"
-            } else {
-                location.href = "/pages/product-manager.html"
-            }
-        } else {
-            alert("Email hoặc mật khẩu không đúng!");
-        }
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const matchedUser = users.find(u => u.email === email && u.password === password);
+
+    if (!matchedUser) {
+      alert("Email hoặc mật khẩu không đúng!");
+      return;
     }
-}
+
+    localStorage.setItem("isLoggedIn", "true");
+    window.location.href = "product-manager.html";
+  }
