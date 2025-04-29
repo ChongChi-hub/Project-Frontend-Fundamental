@@ -84,7 +84,6 @@ function handleRegister() {
   }, 1000);
 }
 
-// ====== THÊM phần XÓA ALERT + ERROR khi người dùng gõ lại ======
 
 const inputConfigs = [
   { id: "regis-name", errorId: "name-regis-error" },

@@ -200,5 +200,5 @@ document.getElementById("confirmLogoutBtn").addEventListener("click", () => {
   location.href = "../pages/login.html";
 });
 
-// Khởi động
+
 renderTasks();

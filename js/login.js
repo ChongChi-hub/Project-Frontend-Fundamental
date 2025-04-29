@@ -77,7 +77,7 @@ function handleLoginSubmit() {
   }, 1000);
 }
 
-// ====== THÊM PHẦN NÀY ======
+
 const passwordInput = document.getElementById("login-password");
 passwordInput.addEventListener("input", () => {
   const loginAlert = document.getElementById("login-alert");

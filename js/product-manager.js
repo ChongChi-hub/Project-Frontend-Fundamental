@@ -189,7 +189,7 @@ function openLogoutModal() {
   };
 }
 
-// Khởi động
+
 renderProjects();
 
 // Tìm kiếm realtime
