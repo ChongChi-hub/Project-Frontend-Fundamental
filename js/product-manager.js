@@ -169,11 +169,23 @@ function resetFormInputs() {
   delete nameInput.dataset.editId;
 }
 
+let deleteProjectId = null;
+
 function deleteProject(id) {
-  projects = projects.filter(p => p.id !== id);
-  localStorage.setItem("projects", JSON.stringify(projects));
-  renderProjects();
+  deleteProjectId = id;
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("confirmDeleteModal"));
+  modal.show();
 }
+
+document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
+  if (deleteProjectId !== null) {
+    projects = projects.filter(p => p.id !== deleteProjectId);
+    localStorage.setItem("projects", JSON.stringify(projects));
+    renderProjects();
+    deleteProjectId = null;
+    bootstrap.Modal.getOrCreateInstance(document.getElementById("confirmDeleteModal")).hide();
+  }
+});
 
 function openProjectDetail(id, name, description) {
   localStorage.setItem("currentProjectId", id);
@@ -192,4 +204,4 @@ function openLogoutModal() {
 }
 
 renderProjects();
-document.getElementById('searchInput').addEventListener('input', renderProjects);
+
