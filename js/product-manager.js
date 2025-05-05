@@ -1,19 +1,36 @@
-// ===============================
-// product-manager.js (chuẩn theo yêu cầu ID tăng dần)
-// ===============================
+// ==== product-manager.js ====
 
 // Kiểm tra đăng nhập
 if (localStorage.getItem("isLoggedIn") !== "true") {
   location.href = "../pages/login.html";
 }
 
-// Load dữ liệu
-let projects = JSON.parse(localStorage.getItem("projects")) || [];
+let projects = [
+  {
+    id: 1,
+    projectName: "Xây dựng website thương mại điện tử",
+    description: "Dự án xây dựng nền tảng thương mại điện tử với chức năng giỏ hàng, thanh toán và quản lý sản phẩm.",
+    members: [
+      { userId: 1, role: "Project owner" },
+      { userId: 2, role: "Frontend developer" }
+    ]
+  },
+  {
+    id: 2,
+    projectName: "Ứng dụng đặt lịch khám bệnh",
+    description: "Hệ thống giúp bệnh nhân đặt lịch, nhận thông báo và theo dõi lịch sử khám chữa bệnh.",
+    members: [
+      { userId: 1, role: "Project owner" }
+    ]
+  }
+];
+
+localStorage.setItem("projects", JSON.stringify(projects));
+JSON.parse(localStorage.getItem("projects")) || [];
 let projectIdCounter = parseInt(localStorage.getItem("projectIdCounter")) || 1;
 let currentPage = 1;
 const projectsPerPage = 5;
 
-// Vẽ bảng dự án
 function renderProjects() {
   const tbody = document.getElementById("projectTableBody");
   const keyword = document.getElementById("searchInput").value.toLowerCase();
@@ -39,7 +56,6 @@ function renderProjects() {
   renderPagination(filtered.length);
 }
 
-// Phân trang
 function renderPagination(totalItems) {
   const totalPages = Math.ceil(totalItems / projectsPerPage);
   const pagination = document.getElementById("pagination");
@@ -67,7 +83,6 @@ function goToPage(page) {
   renderProjects();
 }
 
-// Mở modal thêm/sửa dự án
 function openAddModal(id = null) {
   resetFormInputs();
   const label = document.getElementById("projectModalLabel");
@@ -89,7 +104,6 @@ function openAddModal(id = null) {
   bootstrap.Modal.getOrCreateInstance(document.getElementById("projectModal")).show();
 }
 
-// Lưu dự án
 function saveProject() {
   const nameInput = document.getElementById("projectName");
   const descriptionInput = document.getElementById("projectDescription");
@@ -107,29 +121,22 @@ function saveProject() {
   if (!name) {
     nameError.textContent = "Tên dự án không được để trống";
     valid = false;
-  } else if (name.length > 101) {
-    nameError.textContent = "Tên dự án tối đa 100 ký tự";
-    valid = false;
   }
 
   if (!description) {
     descriptionError.textContent = "Mô tả dự án không được để trống";
     valid = false;
-  } else if (description.length > 151) {
-    descriptionError.textContent = "Mô tả tối đa 150 ký tự";
-    valid = false;
   }
 
   if (!valid) return;
 
-  // Kiểm tra trùng tên
   const isDuplicate = projects.some(p =>
     p.projectName.toLowerCase() === name.toLowerCase() &&
     (!nameInput.dataset.editId || p.id != nameInput.dataset.editId)
   );
 
   if (isDuplicate) {
-    nameError.textContent = "Tên dự án đã tồn tại. Vui lòng nhập tên khác.";
+    nameError.textContent = "Tên dự án đã tồn tại.";
     return;
   }
 
@@ -138,7 +145,14 @@ function saveProject() {
     project.projectName = name;
     project.description = description;
   } else {
-    projects.push({ id: projectIdCounter++, projectName: name, description });
+    projects.push({
+      id: projectIdCounter++,
+      projectName: name,
+      description,
+      members: [
+        { userId: 1, role: "Project owner" } // mặc định 1 thành viên
+      ]
+    });
     localStorage.setItem("projectIdCounter", projectIdCounter.toString());
   }
 
@@ -147,7 +161,6 @@ function saveProject() {
   renderProjects();
 }
 
-// Reset form
 function resetFormInputs() {
   const nameInput = document.getElementById("projectName");
   const descriptionInput = document.getElementById("projectDescription");
@@ -156,30 +169,19 @@ function resetFormInputs() {
   delete nameInput.dataset.editId;
 }
 
-// Xóa dự án
 function deleteProject(id) {
-  const confirmBtn = document.getElementById("confirmDeleteBtn");
-  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("confirmDeleteModal"));
-
-  confirmBtn.onclick = function () {
-    projects = projects.filter(p => p.id !== id);
-    localStorage.setItem("projects", JSON.stringify(projects));
-    renderProjects();
-    modal.hide();
-  };
-
-  modal.show();
+  projects = projects.filter(p => p.id !== id);
+  localStorage.setItem("projects", JSON.stringify(projects));
+  renderProjects();
 }
 
-// Xem chi tiết
-function openProjectDetail(projectId, projectName, projectDescription) {
-  localStorage.setItem("currentProjectId", projectId);
-  localStorage.setItem("currentProjectName", projectName);
-  localStorage.setItem("currentProjectDescription", projectDescription);
+function openProjectDetail(id, name, description) {
+  localStorage.setItem("currentProjectId", id);
+  localStorage.setItem("currentProjectName", name);
+  localStorage.setItem("currentProjectDescription", description);
   location.href = "../pages/category-manager.html";
 }
 
-// Đăng xuất
 function openLogoutModal() {
   const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("logoutConfirmModal"));
   modal.show();
@@ -189,8 +191,5 @@ function openLogoutModal() {
   };
 }
 
-
 renderProjects();
-
-// Tìm kiếm realtime
 document.getElementById('searchInput').addEventListener('input', renderProjects);

@@ -1,5 +1,3 @@
-
-// Kiểm tra đăng nhập
 if (localStorage.getItem("isLoggedIn") !== "true") {
   location.href = "../pages/login.html";
 }
@@ -7,67 +5,29 @@ if (localStorage.getItem("isLoggedIn") !== "true") {
 const currentProjectId = localStorage.getItem("currentProjectId");
 const currentProjectName = localStorage.getItem("currentProjectName") || "Tên dự án";
 const currentProjectDescription = localStorage.getItem("currentProjectDescription") || "Mô tả dự án.";
+const allProjects = JSON.parse(localStorage.getItem("projects")) || [];
+const currentProject = allProjects.find(p => p.id == currentProjectId);
+const users = JSON.parse(localStorage.getItem("users")) || [];
+
+if (!currentProject) {
+  location.href = "../pages/product-manager.html";
+}
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let deleteTaskId = null;
 
-// Hiển thị tiêu đề dự án
-const projectTitle = document.getElementById("projectTitle");
-const projectDescription = document.getElementById("projectDescription");
-projectTitle.textContent = currentProjectName;
-projectDescription.textContent = currentProjectDescription;
+document.getElementById("projectTitle").textContent = currentProjectName;
+document.getElementById("projectDescription").textContent = currentProjectDescription;
 
-function getFilteredAndSortedTasks() {
-  const keyword = document.getElementById("searchTaskInput").value.trim().toLowerCase();
-  const sortValue = document.getElementById("sortSelect").value;
-
-  let projectTasks = tasks.filter(task => task.projectId == currentProjectId);
-
-  if (keyword) {
-    projectTasks = projectTasks.filter(task => task.taskName.toLowerCase().includes(keyword));
-  }
-
-  if (sortValue) {
-    projectTasks.sort((a, b) => {
-      let compare = 0;
-      if (sortValue === "status") compare = a.status.localeCompare(b.status);
-      else if (sortValue === "priority") compare = a.priority.localeCompare(b.priority);
-      else if (sortValue === "progress") compare = a.progress.localeCompare(b.progress);
-      return -compare; // Giảm dần
-    });
-  }
-
-  return projectTasks;
+function getUserInfo(userId) {
+  const member = currentProject?.members?.find(m => m.userId == userId);
+  const user = users.find(u => u.id == userId);
+  return user ? `${user.fullName} (${member?.role || 'Vai trò?'})` : "Không rõ";
 }
 
-function renderTasks() {
-  const table = document.getElementById("taskTable");
-  table.innerHTML = "";
-
-  const projectTasks = getFilteredAndSortedTasks();
-
-  if (projectTasks.length === 0) {
-    table.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Không tìm thấy nhiệm vụ nào!</td></tr>`;
-    return;
-  }
-
-  projectTasks.forEach(task => {
-    table.innerHTML += `
-      <tr>
-        <td>${task.taskName}</td>
-        <td>${task.assigneeId}</td>
-        <td>${task.status}</td>
-        <td class="text-primary">${formatDate(task.asignDate)}</td>
-        <td class="text-primary">${formatDate(task.dueDate)}</td>
-        <td>${generatePriorityBadge(task.priority)}</td>
-        <td>${generateProgressBadge(task.progress)}</td>
-        <td>
-          <button class="btn btn-warning btn-sm" onclick="openTaskModal(${task.id})">Sửa</button>
-          <button class="btn btn-danger btn-sm" onclick="confirmDelete(${task.id})">Xóa</button>
-        </td>
-      </tr>
-    `;
-  });
+function formatDate(dateStr) {
+  const parts = dateStr.split("-");
+  return parts.length === 3 ? `${parts[1]}-${parts[2]}` : dateStr;
 }
 
 function generatePriorityBadge(priority) {
@@ -82,39 +42,82 @@ function generateProgressBadge(progress) {
   return '<span class="badge bg-success">Đúng tiến độ</span>';
 }
 
-function formatDate(dateStr) {
-  const parts = dateStr.split("-");
-  if (parts.length === 3) return `${parts[1]}-${parts[2]}`; // MM-DD
-  return dateStr;
-}
+function renderTasks() {
+  const table = document.getElementById("taskTable");
+  const keyword = document.getElementById("searchTaskInput").value.toLowerCase();
+  const sortValue = document.getElementById("sortSelect").value;
 
-function openTaskModal(taskId = null) {
-  const modal = new bootstrap.Modal(document.getElementById("taskModal"));
-  const modalTitle = document.getElementById("modalTitle");
-
-  document.getElementById("taskForm").reset();
-  resetFormErrors();
-  document.getElementById("editTaskId").value = "";
-
-  if (taskId) {
-    const task = tasks.find(t => t.id === taskId);
-    if (task) {
-      document.getElementById("taskName").value = task.taskName;
-      document.getElementById("assigneeId").value = task.assigneeId;
-      document.getElementById("status").value = task.status;
-      document.getElementById("asignDate").value = task.asignDate;
-      document.getElementById("dueDate").value = task.dueDate;
-      document.getElementById("priority").value = task.priority;
-      document.getElementById("progress").value = task.progress;
-      document.getElementById("editTaskId").value = task.id;
-      modalTitle.textContent = "Sửa Nhiệm Vụ";
-    }
-  } else {
-    modalTitle.textContent = "Thêm Nhiệm Vụ";
+  let projectTasks = tasks.filter(t => t.projectId == currentProjectId);
+  if (keyword) {
+    projectTasks = projectTasks.filter(t => t.taskName.toLowerCase().includes(keyword));
   }
 
-  modal.show();
+  if (sortValue) {
+    projectTasks.sort((a, b) => {
+      if (sortValue === "priority") return a.priority.localeCompare(b.priority);
+      if (sortValue === "progress") return a.progress.localeCompare(b.progress);
+      return 0;
+    });
+  }
+
+  const grouped = {};
+  projectTasks.forEach(task => {
+    if (!grouped[task.status]) grouped[task.status] = [];
+    grouped[task.status].push(task);
+  });
+
+  const allStatuses = ["To do", "In progress", "Pending", "Done"];
+  table.innerHTML = "";
+
+  allStatuses.forEach((status, index) => {
+    const tasksByStatus = grouped[status] || [];
+    const collapseId = `collapseStatus${index}`;
+    const headingId = `headingStatus${index}`;
+
+    table.innerHTML += `
+  <tr>
+    <td colspan="8" class="p-0 border-0">
+      <div class="accordion mb-3 shadow-sm" id="accordion-${index}">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="${headingId}">
+            <button class="accordion-button ${tasksByStatus.length === 0 ? 'collapsed' : ''}" 
+                    type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" 
+                    aria-expanded="${tasksByStatus.length !== 0}" 
+                    aria-controls="${collapseId}">
+              ${status}
+            </button>
+          </h2>
+          <div id="${collapseId}" class="accordion-collapse collapse ${tasksByStatus.length !== 0 ? 'show' : ''}" 
+               aria-labelledby="${headingId}" data-bs-parent="#accordion-${index}">
+            <div class="accordion-body p-0">
+              <table class="table table-bordered table-hover m-0 text-center align-middle">
+                <tbody>
+                  ${tasksByStatus.length === 0
+                    ? `<tr><td colspan="7" class="text-muted">Không có nhiệm vụ</td></tr>`
+                    : tasksByStatus.map(task => `
+                      <tr>
+                        <td>${task.taskName}</td>
+                        <td>${getUserInfo(task.assigneeId)}</td>
+                        <td class="text-primary">${formatDate(task.asignDate)}</td>
+                        <td class="text-primary">${formatDate(task.dueDate)}</td>
+                        <td>${generatePriorityBadge(task.priority)}</td>
+                        <td>${generateProgressBadge(task.progress)}</td>
+                        <td>
+                          <button class="btn btn-warning btn-sm" onclick="openTaskModal(${task.id})">Sửa</button>
+                          <button class="btn btn-danger btn-sm" onclick="confirmDelete(${task.id})">Xóa</button>
+                        </td>
+                      </tr>`).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </td>
+  </tr>`;
+  });
 }
+
 
 function resetFormErrors() {
   ["taskNameError", "assigneeIdError", "statusError", "asignDateError", "dueDateError", "priorityError", "progressError"]
@@ -123,7 +126,7 @@ function resetFormErrors() {
 
 function saveTask() {
   const taskName = document.getElementById("taskName").value.trim();
-  const assigneeId = document.getElementById("assigneeId").value.trim();
+  const assigneeId = parseInt(document.getElementById("assigneeId").value);
   const status = document.getElementById("status").value;
   const asignDate = document.getElementById("asignDate").value;
   const dueDate = document.getElementById("dueDate").value;
@@ -135,39 +138,26 @@ function saveTask() {
   let valid = true;
 
   if (!taskName) { document.getElementById("taskNameError").textContent = "Tên nhiệm vụ không được để trống"; valid = false; }
-  if (!assigneeId) { document.getElementById("assigneeIdError").textContent = "Người phụ trách không được để trống"; valid = false; }
-  if (!status) { document.getElementById("statusError").textContent = "Vui lòng chọn trạng thái"; valid = false; }
-  if (!asignDate) { document.getElementById("asignDateError").textContent = "Ngày giao không được để trống"; valid = false; }
-  if (!dueDate) { document.getElementById("dueDateError").textContent = "Hạn chót không được để trống"; valid = false; }
-  if (!priority) { document.getElementById("priorityError").textContent = "Vui lòng chọn độ ưu tiên"; valid = false; }
-  if (!progress) { document.getElementById("progressError").textContent = "Vui lòng chọn tiến độ"; valid = false; }
+  if (!assigneeId || !currentProject.members.some(m => m.userId === assigneeId)) {
+    document.getElementById("assigneeIdError").textContent = "Người phụ trách không hợp lệ"; valid = false;
+  }
+  if (!status) { document.getElementById("statusError").textContent = "Chọn trạng thái"; valid = false; }
+  if (!asignDate) { document.getElementById("asignDateError").textContent = "Chọn ngày giao"; valid = false; }
+  if (!dueDate) { document.getElementById("dueDateError").textContent = "Chọn hạn chót"; valid = false; }
+  if (!priority) { document.getElementById("priorityError").textContent = "Chọn ưu tiên"; valid = false; }
+  if (!progress) { document.getElementById("progressError").textContent = "Chọn tiến độ"; valid = false; }
 
   if (!valid) return;
 
   if (editTaskId) {
     const task = tasks.find(t => t.id == editTaskId);
-    if (task) {
-      task.taskName = taskName;
-      task.assigneeId = assigneeId;
-      task.status = status;
-      task.asignDate = asignDate;
-      task.dueDate = dueDate;
-      task.priority = priority;
-      task.progress = progress;
-    }
+    Object.assign(task, { taskName, assigneeId, status, asignDate, dueDate, priority, progress });
   } else {
-    const newTask = {
+    tasks.push({
       id: Date.now(),
-      taskName,
-      assigneeId,
-      status,
-      asignDate,
-      dueDate,
-      priority,
-      progress,
-      projectId: currentProjectId
-    };
-    tasks.push(newTask);
+      taskName, assigneeId, status, asignDate, dueDate,
+      priority, progress, projectId: currentProjectId
+    });
   }
 
   localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -177,7 +167,7 @@ function saveTask() {
 
 function confirmDelete(taskId) {
   deleteTaskId = taskId;
-  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("confirmDeleteModal"));
+  const modal = new bootstrap.Modal(document.getElementById("confirmDeleteModal"));
   modal.show();
 }
 
@@ -191,14 +181,47 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
   }
 });
 
-document.getElementById("sortSelect").classList.add("ms-2");
 document.getElementById("sortSelect").addEventListener("change", renderTasks);
 document.getElementById("searchTaskInput").addEventListener("input", renderTasks);
-
 document.getElementById("confirmLogoutBtn").addEventListener("click", () => {
   localStorage.removeItem("isLoggedIn");
   location.href = "../pages/login.html";
 });
 
+function openTaskModal(taskId = null) {
+  const modal = new bootstrap.Modal(document.getElementById("taskModal"));
+  const modalTitle = document.getElementById("modalTitle");
+  const form = document.getElementById("taskForm");
+  const editTaskId = document.getElementById("editTaskId");
+
+  form.reset();
+  editTaskId.value = "";
+  resetFormErrors();
+
+  const assigneeSelect = document.getElementById("assigneeId");
+  assigneeSelect.innerHTML = currentProject.members.map(m => {
+    const user = users.find(u => u.id == m.userId);
+    return `<option value="${m.userId}">${user?.fullName || "Không rõ"}</option>`;
+  }).join("");
+
+  if (taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      document.getElementById("taskName").value = task.taskName;
+      document.getElementById("assigneeId").value = task.assigneeId;
+      document.getElementById("status").value = task.status;
+      document.getElementById("asignDate").value = task.asignDate;
+      document.getElementById("dueDate").value = task.dueDate;
+      document.getElementById("priority").value = task.priority;
+      document.getElementById("progress").value = task.progress;
+      editTaskId.value = task.id;
+      modalTitle.textContent = "Sửa Nhiệm Vụ";
+    }
+  } else {
+    modalTitle.textContent = "Thêm Nhiệm Vụ";
+  }
+
+  modal.show();
+}
 
 renderTasks();

@@ -4,32 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quản Lý Dự Án</title>
+  <link rel="stylesheet" href="../css/product-manager.css">
+  <link rel="stylesheet" href="../css/reset.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/product-manager.css" />
 </head>
 <body>
-<!-- Thanh Navbar -->
 <nav class="navbar navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Quản Lý Dự Án</a>
     <div>
-      <a class="nav-link d-inline text-white" href="#">Dự án</a>
+      <a class="nav-link d-inline text-white" href="../pages/product-manager.html">Dự án</a>
       <a class="nav-link d-inline text-white" href="#">Nhiệm vụ của tôi</a>
-      <a class="nav-link d-inline text-white" style="cursor:pointer" onclick="openLogoutModal()" >Đăng xuất</a>
+      <a class="nav-link d-inline text-white" style="cursor:pointer" onclick="openLogoutModal()">Đăng xuất</a>
     </div>
   </div>
 </nav>
-
 <div class="container my-4">
   <div class="card">
     <div class="card-body">
       <h2 class="card-title">Quản Lý Dự Án Nhóm</h2>
-
       <div class="d-flex justify-content-between align-items-center mb-3">
         <button class="btn btn-primary" onclick="openAddModal()">+ Thêm Dự Án</button>
         <input type="text" class="form-control w-25" id="searchInput" placeholder="Tìm kiếm dự án">
       </div>
-
       <div class="table-responsive">
         <table class="table table-bordered align-middle text-center">
           <thead class="table-dark">
@@ -42,17 +39,10 @@
           <tbody id="projectTableBody"></tbody>
         </table>
       </div>
-
       <nav><ul class="pagination justify-content-center" id="pagination"></ul></nav>
     </div>
   </div>
 </div>
-
-<footer class="text-center mt-5 py-3 bg-dark text-white">
-  &copy; 2025 Team Management. All rights reserved.
-</footer>
-
-<!-- Modal Thêm/Sửa Dự Án -->
 <div class="modal fade" id="projectModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -79,25 +69,6 @@
     </div>
   </div>
 </div>
-
-<!-- Modal Xác Nhận Xóa -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Xác nhận xóa</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">Bạn có chắc chắn muốn xóa dự án này không?</div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-        <button class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Xác Nhận Đăng Xuất -->
 <div class="modal fade" id="logoutConfirmModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -113,7 +84,6 @@
     </div>
   </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/product-manager.js"></script>
 </body>
