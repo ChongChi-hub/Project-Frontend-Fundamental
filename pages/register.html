@@ -5,34 +5,38 @@
   <title>Đăng ký</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../css/register.css">
-  <link rel="stylesheet" href="../css/login.css">
 </head>
 <body>
-  <div class="container-login">
-    <form class="form-login-box">
-      <h2>Đăng ký</h2>
+  <div class="container-register">
+    <form class="form-register-box">
+      <h2 class="text-center mb-4">Đăng ký</h2>
+
       
-      <label for="regis-name">Họ và tên</label>
-      <input type="text" id="regis-name" class="form-control" required>
-      <div id="name-regis-error" class="error-text"></div>
 
-      <label for="regis-email">Email</label>
-      <input type="email" id="regis-email" class="form-control" required>
-      <div id="email-regis-error" class="error-text"></div>
+      <div class="mb-3">
+        <label for="register-fullname" class="form-label">Họ và tên</label>
+        <input type="text" id="register-fullname" class="form-control">
+      </div>
 
-      <label for="regis-password">Mật khẩu</label>
-      <input type="password" id="regis-password" class="form-control" required>
-      <div id="password-regis-error" class="error-text"></div>
+      <div class="mb-3">
+        <label for="register-email" class="form-label">Email</label>
+        <input type="email" id="register-email" class="form-control">
+      </div>
 
-      <label for="confirm-password">Xác nhận mật khẩu</label>
-      <input type="password" id="confirm-password" class="form-control" required>
-      <div id="error-confirm-password" class="error-text"></div>
+      <div class="mb-3">
+        <label for="register-password" class="form-label">Mật khẩu</label>
+        <input type="password" id="register-password" class="form-control">
+      </div>
 
-      <button type="button" onclick="handleRegister()" class="btn btn-primary w-100 mt-3">Đăng ký</button>
+      <div class="mb-3">
+        <label for="register-confirm-password" class="form-label">Xác nhận mật khẩu</label>
+        <input type="password" id="register-confirm-password" class="form-control">
+      </div>
+    <!-- alert Bootstrap -->
+        <div id="register-alert" class="mb-3"></div>
+      <button type="button" onclick="handleRegisterSubmit()" class="btn btn-primary w-100">Đăng ký</button>
 
-      <div id="register-alert" class="mt-3"></div> <!-- Alert Bootstrap hiển thị ở đây -->
-
-      <p class="mt-3">Đã có tài khoản? <a href="login.html">Đăng nhập</a></p>
+      <p class="text-center mt-3">Đã có tài khoản? <a href="../pages/login.html">Đăng nhập</a></p>
     </form>
   </div>
 
